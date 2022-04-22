@@ -1,13 +1,15 @@
 package com.sodove
-
 import com.sodove.model.ScheduleLesson
 import com.sodove.model.ScheduleLessonContent
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import java.io.BufferedReader
+import java.io.FileReader
 import java.io.InputStreamReader
 import java.net.URL
+import java.util.*
+import kotlin.collections.ArrayList
 
 class JsonParser {
     fun parse(url: String): List<ScheduleLesson> {
@@ -17,7 +19,8 @@ class JsonParser {
             val link = URL("http://rsvpu.ru/contents/api/rasp.php?$url") // URL to Parse
             val url_connection = link.openConnection()
             val inp_stream = BufferedReader(InputStreamReader(url_connection.getInputStream()))
-
+//            val inp_stream = FileReader("aud1.json") // filereader
+            afterread = Date().time
             val rootJsonObject = parser.parse(inp_stream) as JSONArray
             for (o in rootJsonObject) {
                 val scheduleLesson = ScheduleLesson()

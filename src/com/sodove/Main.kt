@@ -1,38 +1,48 @@
-package com.sodove;
+package com.sodove
 
-import com.sodove.model.ScheduleLesson;
+import kotlin.jvm.JvmStatic
+import com.sodove.model.ScheduleLesson
+import java.util.*
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+var afterread : Long = 0
+object Main {
+    @JvmStatic
+    fun main(args: Array<String>) {
 
-public class Main {
+        val starttime = Date().time
 
-    public static void main(String[] args) {
+        val parser = JsonParser()
+        val scheduleLessons = parser.parse("v_aud=1") // v_gru, v_aud, v_prep
+        val scheduleDateTable: MutableList<List<ScheduleLesson>> = ArrayList()
 
-    JsonParser parser = new JsonParser();
-    List<ScheduleLesson> scheduleLesson = parser.parse("v_gru=4030"); // v_gru, v_aud, v_prep
-    List<List<ScheduleLesson>> scheduleDateTable = new ArrayList<>();
+        val parse = Date().time
 
-    if (!scheduleLesson.isEmpty()) {
-        String scheduleDate = scheduleLesson.get(0).getDate();
-        List<ScheduleLesson> scheduleContent = new ArrayList<>();
-        for (int i = 0; i <= scheduleLesson.size(); i++) {
-            String scheduleDateCycle;
-            try {
-                scheduleDateCycle = scheduleLesson.get(i).getDate();
-            } catch (IndexOutOfBoundsException e) {
-                scheduleDateTable.add(scheduleContent);
-                break;
+        if (!scheduleLessons.isEmpty()) {
+            var scheduleDate = scheduleLessons[0].date
+            var scheduleContent: MutableList<ScheduleLesson> = ArrayList()
+            
+            for (lesson in scheduleLessons) {
+                val scheduleDateCycle = lesson.date
+                
+                if (scheduleDate != scheduleDateCycle) {
+                    scheduleDateTable.add(scheduleContent)
+                    scheduleContent = ArrayList()
+                    scheduleDate = scheduleDateCycle
+                }
+                
+                scheduleContent.add(lesson)
+                if (lesson === scheduleLessons[scheduleLessons.size - 1])
+                    scheduleDateTable.add(scheduleContent)
             }
-            if (!Objects.equals(scheduleDate, scheduleDateCycle)) {
-                scheduleDateTable.add(scheduleContent);
-                scheduleContent = new ArrayList<>();
-                scheduleDate = scheduleDateCycle;
-            }
-            scheduleContent.add(scheduleLesson.get(i));
         }
-    }
-    System.out.println(scheduleDateTable);
+
+        val separate = Date().time
+        println("size: ${scheduleLessons.size}")
+//        println(scheduleDateTable)                        //final table
+        println("get: ${afterread-starttime}ms")
+        println("parse: ${parse - afterread}ms")
+        println("separate by days: ${separate - parse}ms")
+        println("total: ${separate - starttime}ms")
+
     }
 }
